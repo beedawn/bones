@@ -1,4 +1,4 @@
-postgres=# CREATE USER rust_svc WITH PASSWORD 'qJFPv8N8Ha';
+postgres=# CREATE USER rust_svc WITH PASSWORD '';
 CREATE ROLE
 postgres=# GRANT USAGE ON SCHEMA public TO rust_svc;
 GRANT
