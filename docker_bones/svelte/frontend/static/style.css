@@ -1,0 +1,25 @@
+.inlineDiv{
+    display:inline;
+    
+    }
+    
+    
+    .test{
+    
+        color:red;
+    }
+    
+    .selectedBill{
+        background-color: grey;
+        color: white;
+    }
+    
+    .selectedUser{
+        background-color: grey;
+        color: white;
+    }
+    
+    .selectedProvider{
+        background-color: grey;
+        color: white;
+    }

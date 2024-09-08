@@ -774,7 +774,7 @@ async fn add_provider(
 #[post("logout")]
 async fn logout(data: web::Data<AppState>, req_body: String) -> impl Responder {
     let mut cookie = Cookie::build("bones", "value-does-not-matter")
-        .domain("localhost")
+        .domain("0.0.0.0")
         .path("/")
         .finish();
     cookie.make_removal();
@@ -827,7 +827,7 @@ async fn login(data: web::Data<AppState>, req_body: String) -> impl Responder {
             claims.insert("role", obj.role.clone().to_string());
             let token_cookie = Token::new(header, claims).sign_with_key(&key).unwrap();
             let mut cookie = Cookie::build("bones", token_cookie.as_str().to_owned())
-                .domain("localhost")
+                .domain("0.0.0.0")
                 .path("/")
                 .secure(true)
                 .http_only(true)
@@ -835,7 +835,7 @@ async fn login(data: web::Data<AppState>, req_body: String) -> impl Responder {
             //sets cookie duration to 60 minutes
             cookie.set_max_age(Duration::minutes(60));
             HttpResponse::Ok()
-                .header("Access-Control-Allow-Origin", "http://localhost:5173")
+                .header("Access-Control-Allow-Origin", "http://0.0.0.0:4173")
                 .header("Access-Control-Allow-Credentials", "true")
                 .cookie(cookie)
                 .body(format!(
@@ -868,8 +868,8 @@ async fn main() -> std::io::Result<()> {
         .expect("error connecting to postgres");
     HttpServer::new(move || {
         let cors = Cors::default()
-            .allowed_origin("http://localhost:5173")
-            .allowed_origin_fn(|origin, _req_head| origin.as_bytes().ends_with(b"localhost:5173"))
+            .allowed_origin("http://localhost:4173")
+            .allowed_origin_fn(|origin, _req_head| origin.as_bytes().ends_with(b"0.0.0.0:4173"))
             .allowed_methods(vec!["GET", "POST"])
             .allowed_headers(vec![http::header::AUTHORIZATION, http::header::ACCEPT])
             .allowed_header(http::header::CONTENT_TYPE)
@@ -890,7 +890,7 @@ async fn main() -> std::io::Result<()> {
             /*.service(token)*/
             .service(logout)
     })
-    .bind(("127.0.0.1", 8080))?
+    .bind(("0.0.0.0", 8080))?
     .run()
     .await
 }

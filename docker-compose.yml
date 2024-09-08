@@ -1,0 +1,29 @@
+version: '3.8'
+
+services:
+  app:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    environment:
+      # - DATABASE_URL=postgres://postgres:password@db:5432/mydatabase
+      - DATABASE_URL=postgres://rust_svc:qJFPv8N8Ha@localhost:5432/postgres
+    depends_on:
+      - db
+    ports:
+      - "8080:8080"
+
+  db:
+    image: postgres:13
+    environment:
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: password
+      POSTGRES_DB: mydatabase
+    volumes:
+      - pgdata:/var/lib/postgresql/data
+    ports:
+      - "5432:5432"
+
+volumes:
+  pgdata:
+
