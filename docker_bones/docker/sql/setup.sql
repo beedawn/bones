@@ -88,6 +88,6 @@ CREATE TABLE attach(
 --Insert initial user
 INSERT INTO USERS (username, password) VALUES ('username', 'password') RETURNING id;
 INSERT INTO Roletype (role) VALUES ('admin');
-INSERT INTO roles (id, role_name) VALUES (1, 1);
+INSERT INTO roles (id, roletypeid) VALUES (1, 1);
 --add role to user, 1 is admin for initial user
 INSERT INTO need (userid, roleid) VALUES ((SELECT id FROM Users WHERE username = 'username' AND password='password'),('1'));
