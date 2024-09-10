@@ -506,7 +506,7 @@ enum providerViewMode{
 					</div>
 					<div class="bill_input">
 						<label
-							>Provider ID<input
+							>Bill Status ID<input
 								bind:value={BillToAdd.billstatusid}
 								placeholder="Due Bill Status ID"
 								name="newbillstatusid"

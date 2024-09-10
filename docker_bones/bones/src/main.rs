@@ -783,16 +783,21 @@ async fn logout(data: web::Data<AppState>, req_body: String) -> impl Responder {
 }
 #[post("/login")]
 async fn login(data: web::Data<AppState>, req_body: String) -> impl Responder {
+println!("Received request: {:?}", req_body);
     let user: User_no_auth = serde_json::from_str(req_body.as_str()).expect("not good");
     // add logic here to check if user and password are in db somehow...securely
     // then give them some kind of token or cookie to actually access bills
     //gets db connection
+    //
     let mut conn = data.db.acquire().await.unwrap();
     //old don't think i need anymore
+    //
+   println!("Database connection acquired"); 
     let query_parameter = user.username.clone();
     let parsed_query_parameter: String = input_sanitizer(user.username);
     //users password, this probably needs stored in the db as encrypted data and not plain text
     //also this removes spaces from the user input
+    
     let parsed_query_parameter_password: String = input_sanitizer(user.password);
     let mut row = sqlx::query(
         format!(
@@ -811,6 +816,7 @@ async fn login(data: web::Data<AppState>, req_body: String) -> impl Responder {
 
     match row {
         Ok(row) => {
+ println!("Query successful, row fetched");
             let obj = User {
                 id: row.get("id"),
                 username: row.get("username"),
@@ -827,13 +833,14 @@ async fn login(data: web::Data<AppState>, req_body: String) -> impl Responder {
             claims.insert("role", obj.role.clone().to_string());
             let token_cookie = Token::new(header, claims).sign_with_key(&key).unwrap();
             let mut cookie = Cookie::build("bones", token_cookie.as_str().to_owned())
-                .domain("0.0.0.0")
+                .domain("localhost")
                 .path("/")
                 .secure(true)
                 .http_only(true)
                 .finish();
             //sets cookie duration to 60 minutes
             cookie.set_max_age(Duration::minutes(60));
+            println!("{:?}",cookie);
             HttpResponse::Ok()
                 .header("Access-Control-Allow-Origin", "http://0.0.0.0:4173")
                 .header("Access-Control-Allow-Credentials", "true")
@@ -845,6 +852,7 @@ async fn login(data: web::Data<AppState>, req_body: String) -> impl Responder {
                 ))
         }
         Err(e) => {
+println!("Error executing query: {:?}", e);
             let obj = Error {
                 error: e.to_string(),
             };
@@ -869,7 +877,7 @@ async fn main() -> std::io::Result<()> {
     HttpServer::new(move || {
         let cors = Cors::default()
             .allowed_origin("http://localhost:4173")
-            .allowed_origin_fn(|origin, _req_head| origin.as_bytes().ends_with(b"0.0.0.0:4173"))
+            .allowed_origin_fn(|origin, _req_head| origin.as_bytes().ends_with(b"localhost:4173"))
             .allowed_methods(vec!["GET", "POST"])
             .allowed_headers(vec![http::header::AUTHORIZATION, http::header::ACCEPT])
             .allowed_header(http::header::CONTENT_TYPE)

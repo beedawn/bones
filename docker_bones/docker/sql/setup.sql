@@ -91,3 +91,6 @@ INSERT INTO Roletype (role) VALUES ('admin');
 INSERT INTO roles (id, roletypeid) VALUES (1, 1);
 --add role to user, 1 is admin for initial user
 INSERT INTO need (userid, roleid) VALUES ((SELECT id FROM Users WHERE username = 'username' AND password='password'),('1'));
+
+INSERT INTO billstatus (id, status) VALUES (1, 'DUE');
+INSERT INTO billstatus (id, status) VALUES (1, 'PAID');
