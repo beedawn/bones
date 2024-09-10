@@ -1,44 +1,23 @@
 # Bones
-This is a Rust and Svelte web application that utilizes a PostgreSQL database to manage bills.
+This is a Rust and Svelte web application that utilizes a PostgreSQL database to manage bills. It is still very much under development.
 
-## Installing the database
-For instructions on how to install PostgreSQL please see this link:
-https://www.postgresql.org/download/
 
-Once the database is configured, load it into your terminal and run the commands in
+## Deployment
+This application has been dockerized, and can be deployed via docker. The CORS permissions only allow it to be accessed from the same machine running the docker container, as it is no where near ready for production.
+
+First you must have docker installed to install docker, see the link here:
+https://docs.docker.com/engine/install/
+
+Once Docker is installed, you will need to rename the example.env file to .env. For testing purposes, this configuation should be fine.
+
 ```bash
-sql/build_db.sql
+mv example.env .env
 ```
 
-In my installation I created a service user and needed to run the commands in the following directory to grant proper permissions to the service account
+Then use docker compose to launch the docker containers
 ```bash
-sql/insert.sql
+docker compose up --build
 ```
 
-## Building the application
-
-### API
-This application requires a .env file to be configured in the root directory with two variables
-```
-JWT_KEY="this is the key rust uses to sign the JWT within the login cookie"
-POSTGRESS_CONN_STRING=postgres://postgre_username:postgres_password:5432/postgres
-```
-
-Please make sure you have rust installed, rust installation instructions are available here:
-https://rust-lang.github.io/rustup/
-
-To build the backend navigate to the bones directory and run.
-```bash
-cargo build
-cargo run
-```
-### Install and Launch Svelte UI
-Once that is running you can then navigate to 
-```
-svelte/frontend
-```
-And run
-```
-npm install
-npm run dev
-```
+Once this has been completed, the front end will be visable in your browser at:
+http://localhost:4173
