@@ -93,4 +93,11 @@ INSERT INTO roles (id, roletypeid) VALUES (1, 1);
 INSERT INTO need (userid, roleid) VALUES ((SELECT id FROM Users WHERE username = 'username' AND password='password'),('1'));
 
 INSERT INTO billstatus (id, status) VALUES (1, 'DUE');
-INSERT INTO billstatus (id, status) VALUES (1, 'PAID');
+INSERT INTO billstatus (id, status) VALUES (2, 'PAID');
+
+
+INSERT INTO roletype(id, role) VALUES (2, 'Mod');
+INSERT INTO roletype(id, role) VALUES (3, 'User');
+insert into roles (id, roletypeid) VALUES (2,2);
+
+insert into roles (id, roletypeid) VALUES (3,3);

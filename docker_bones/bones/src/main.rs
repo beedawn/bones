@@ -774,7 +774,7 @@ async fn add_provider(
 #[post("logout")]
 async fn logout(data: web::Data<AppState>, req_body: String) -> impl Responder {
     let mut cookie = Cookie::build("bones", "value-does-not-matter")
-        .domain("0.0.0.0")
+        .domain("localhost")
         .path("/")
         .finish();
     cookie.make_removal();
