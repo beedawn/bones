@@ -783,16 +783,21 @@ async fn logout(data: web::Data<AppState>, req_body: String) -> impl Responder {
 }
 #[post("/login")]
 async fn login(data: web::Data<AppState>, req_body: String) -> impl Responder {
+println!("Received request: {:?}", req_body);
     let user: User_no_auth = serde_json::from_str(req_body.as_str()).expect("not good");
     // add logic here to check if user and password are in db somehow...securely
     // then give them some kind of token or cookie to actually access bills
     //gets db connection
+    //
     let mut conn = data.db.acquire().await.unwrap();
     //old don't think i need anymore
+    //
+   println!("Database connection acquired"); 
     let query_parameter = user.username.clone();
     let parsed_query_parameter: String = input_sanitizer(user.username);
     //users password, this probably needs stored in the db as encrypted data and not plain text
     //also this removes spaces from the user input
+    
     let parsed_query_parameter_password: String = input_sanitizer(user.password);
     let mut row = sqlx::query(
         format!(
@@ -811,6 +816,7 @@ async fn login(data: web::Data<AppState>, req_body: String) -> impl Responder {
 
     match row {
         Ok(row) => {
+ println!("Query successful, row fetched");
             let obj = User {
                 id: row.get("id"),
                 username: row.get("username"),
@@ -834,8 +840,9 @@ async fn login(data: web::Data<AppState>, req_body: String) -> impl Responder {
                 .finish();
             //sets cookie duration to 60 minutes
             cookie.set_max_age(Duration::minutes(60));
+            println!("{:?}",cookie);
             HttpResponse::Ok()
-                .header("Access-Control-Allow-Origin", "http://localhost:5173")
+                .header("Access-Control-Allow-Origin", "http://0.0.0.0:4173")
                 .header("Access-Control-Allow-Credentials", "true")
                 .cookie(cookie)
                 .body(format!(
@@ -845,6 +852,7 @@ async fn login(data: web::Data<AppState>, req_body: String) -> impl Responder {
                 ))
         }
         Err(e) => {
+println!("Error executing query: {:?}", e);
             let obj = Error {
                 error: e.to_string(),
             };
@@ -868,8 +876,8 @@ async fn main() -> std::io::Result<()> {
         .expect("error connecting to postgres");
     HttpServer::new(move || {
         let cors = Cors::default()
-            .allowed_origin("http://localhost:5173")
-            .allowed_origin_fn(|origin, _req_head| origin.as_bytes().ends_with(b"localhost:5173"))
+            .allowed_origin("http://localhost:4173")
+            .allowed_origin_fn(|origin, _req_head| origin.as_bytes().ends_with(b"localhost:4173"))
             .allowed_methods(vec!["GET", "POST"])
             .allowed_headers(vec![http::header::AUTHORIZATION, http::header::ACCEPT])
             .allowed_header(http::header::CONTENT_TYPE)
@@ -890,7 +898,7 @@ async fn main() -> std::io::Result<()> {
             /*.service(token)*/
             .service(logout)
     })
-    .bind(("127.0.0.1", 8080))?
+    .bind(("0.0.0.0", 8080))?
     .run()
     .await
 }
